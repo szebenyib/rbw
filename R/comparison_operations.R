@@ -117,7 +117,7 @@ compare_same_structure <- function(x, y, x_name = "x", y_name = "y") {
 # @param y_name optional name of the second dataframe, used for messages
 # @return TRUE if the dataframes are identical
 # @examples
-# compare_same_structure(x = x,
+# compare_same_content(x = x,
 #                        y = y,
 #                        x_name = "first",
 #                        y_name = "second")
