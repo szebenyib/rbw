@@ -12,16 +12,21 @@
 # @export
 strip_leading <- function(chars_to_strip, text) {
   num_chars <- nchar(chars_to_strip)
-  first_num_chars <- substr(x = text,
-                            start = 1,
-                            stop = num_chars)
-  if (first_num_chars == chars_to_strip) {
-    result <- substr(x = text,
-                     start = num_chars + 1,
-                     stop = nchar(text))
-  } else {
-    result <- text
+  strip <- function(text) {
+    first_num_chars <- substr(x = text,
+                              start = 1,
+                              stop = num_chars)
+    if (first_num_chars == chars_to_strip) {
+      result <- substr(x = text,
+                       start = num_chars + 1,
+                       stop = nchar(text))
+    } else {
+      result <- text
+    }
   }
+  result <- sapply(text, strip)
+  names(result) <- NULL
+  return(result)
 }
 
 # Removing trailing characters from the end of characters in a vector.
@@ -38,16 +43,21 @@ strip_leading <- function(chars_to_strip, text) {
 # @export
 strip_trailing <- function(chars_to_strip, text) {
   num_chars <- nchar(chars_to_strip)
-  last_num_chars <- substr(x = text,
-                          start = nchar(text) - (num_chars - 1),
-                          stop = nchar(text))
-  if (last_num_chars == chars_to_strip) {
-    result <- substr(x = text,
-                     start = 1,
-                     stop = nchar(text) - num_chars)
-  } else {
-    result <- text
+  strip <- function(text) {
+    last_num_chars <- substr(x = text,
+                             start = nchar(text) - (num_chars - 1),
+                             stop = nchar(text))
+    if (last_num_chars == chars_to_strip) {
+      result <- substr(x = text,
+                       start = 1,
+                       stop = nchar(text) - num_chars)
+    } else {
+      result <- text
+    }
   }
+  result <- sapply(text, strip)
+  names(result) <- NULL
+  return(result)
 }
 
 # Removing "X.BIC." characters from the beginning of characters in a vector.
