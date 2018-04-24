@@ -12,8 +12,8 @@ test_that("initialization can be performed", {
 test_that("load_csv_local_unconverted", {
   expect_false(exists("RBW_INPUT_FILES_DIR"))
   expect_error(load_csv_local_unconverted(
-    filename = "tests/testdata/sap_bic_agh_mm_1000_all_tab.txt"),
-    "RBW_INPUT_FILES_DIR must be set before using this function, call init_file_loading")
+    filename = file.path("tests", "testdata", "gh_mm_2000_unconverted.txt"),
+    "RBW_INPUT_FILES_DIR must be set before using this function, call init_file_loading"))
 
   RBW_INPUT_FILES_DIR <<- file.path("..", "testdata")
   df <- load_csv_local_unconverted(filename = "gh_mm_2000_unconverted.txt")
@@ -35,8 +35,8 @@ test_that("load_csv_local_unconverted", {
 test_that("load_csv_tab_separated", {
   expect_false(exists("RBW_INPUT_FILES_DIR"))
   expect_error(load_csv_tab_separated(
-    filename = "tests/testdata/sap_bic_agh_mm_1000_all_tab.txt"),
-    "RBW_INPUT_FILES_DIR must be set before using this function, call init_file_loading")
+    filename = file.path("tests", "testdata", "bic_agh_mm_1000_all_tab.txt"),
+    "RBW_INPUT_FILES_DIR must be set before using this function, call init_file_loading"))
 
   RBW_INPUT_FILES_DIR <<- file.path("..", "testdata")
   df <- load_csv_tab_separated(filename = "bic_agh_mm_1000_all_tab.txt")
