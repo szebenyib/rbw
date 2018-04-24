@@ -21,5 +21,13 @@ test_that("load_csv_local_unconverted", {
   expect_equal(ncol(df), 17)
   expect_false(any(grepl("BIC", colnames(df))),
                "Column names contain BIC, they were not cleaned")
-})
 
+  RBW_SYSTEM_LANDSCAPE <<- "sap"
+  df <- load_csv_local_unconverted(filename = "gh_mm_2000_unconverted.txt")
+  expect_equal(nrow(df), 5)
+  expect_equal(ncol(df), 17)
+  expect_false(any(grepl("BIC", colnames(df))),
+               "Column names contain BIC, they were not cleaned")
+  rm("RBW_INPUT_FILES_DIR", "RBW_SYSTEM_LANDSCAPE",
+     pos = ".GlobalEnv")
+})
