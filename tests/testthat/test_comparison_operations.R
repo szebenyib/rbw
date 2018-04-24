@@ -81,7 +81,39 @@ test_that("compare_same_rowcount", {
 })
 
 test_that("compare_same_structure", {
-  expect_true(TRUE)
+  # Colnames
+  x <- mtcars
+  y <- mtcars[, 1:ncol(mtcars) - 1]
+  expect_error(compare_same_structure(x = x, y = y,
+                                     x_name = "STD", y_name = "LAST_MISSING"),
+               paste0("STD and LAST_MISSING do not contain the same number",
+                      " of columns, STD has 11, while LAST_MISSING has 10"))
+
+  # Coltypes
+  x <- mtcars
+  y <- mtcars
+  y$mpg <- as.character(y$mpg)
+  expect_error(compare_same_structure(x = x, y = y,
+                                     x_name = "STD", y_name = "CHR"),
+               paste("STD and CHR have different coltypes.",
+                     "STD has double double double double double double double",
+                     "double double double double while CHR has character",
+                     "double double double double double double double",
+                     "double double double"))
+
+  # Rowcount
+  x <- mtcars
+  y <- mtcars[1:nrow(mtcars)-1,]
+  expect_error(compare_same_structure(x = x, y = y,
+                                      x_name = "STD", y_name = "REDUCED"),
+               paste("STD and REDUCED have different number of rows.",
+                     "STD has 32 while REDUCED has 31"))
+
+  # Identical
+  x <- mtcars
+  y <- mtcars
+  expect_true(compare_same_structure(x = x, y = y,
+                                     x_name = "STD", y_name = "CLONE"))
 })
 
 test_that("compare_same_content", {
