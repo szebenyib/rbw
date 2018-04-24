@@ -49,7 +49,21 @@ test_that("compare_same_colnames", {
 })
 
 test_that("compare_same_coltypes", {
-  expect_true(TRUE)
+  x <- mtcars
+  y <- mtcars
+  y$mpg <- as.character(y$mpg)
+  expect_error(compare_same_coltypes(x = x, y = y,
+                                  x_name = "STD", y_name = "CHR"),
+               paste("STD and CHR have different coltypes.",
+                    "STD has double double double double double double double",
+                    "double double double double while CHR has character",
+                    "double double double double double double double",
+                    "double double double"))
+
+  x <- mtcars
+  y <- mtcars
+  expect_true(compare_same_coltypes(x = x, y = y,
+                                    x_name = "STD", y_name = "CLONE"))
 })
 
 test_that("compare_same_rowcount", {

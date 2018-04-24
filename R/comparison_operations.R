@@ -37,3 +37,29 @@ compare_same_colnames <- function(x, y, x_name = "x", y_name = "y") {
                 " have their columns in different order"))
   }
 }
+
+# Compares whether the two data frames have the same column types
+# (in the same order)
+#
+# @param x the first dataframe
+# @param y the second dataframe
+# @param x_name optional name of the first dataframe, used for messages
+# @param y_name optional name of the second dataframe, used for messages
+# @return TRUE if the dataframes have the same column types
+# @examples
+# compare_same_coltypes(x = x,
+#                       y = y,
+#                       x_name = "first",
+#                       y_name = "second")
+compare_same_coltypes <- function(x, y, x_name = "x", y_name = "y") {
+  if (paste(sapply(x, typeof), collapse = " ") ==
+      paste(sapply(y, typeof), collapse = " ")) {
+    return(TRUE)
+  } else {
+    stop(paste(x_name, "and", y_name, "have different coltypes.",
+               x_name, "has", paste(sapply(x, typeof),
+                                    collapse = " "), "while",
+               y_name, "has", paste(sapply(y, typeof),
+                                    collapse = " ")))
+  }
+}
