@@ -63,3 +63,24 @@ compare_same_coltypes <- function(x, y, x_name = "x", y_name = "y") {
                                     collapse = " ")))
   }
 }
+
+# Compares whether the two data frames have the same number of rows
+#
+# @param x the first dataframe
+# @param y the second dataframe
+# @param x_name optional name of the first dataframe, used for messages
+# @param y_name optional name of the second dataframe, used for messages
+# @return TRUE if the dataframes have the same number of rows
+# @examples
+# compare_same_rowcount(x = x,
+#                       y = y,
+#                       x_name = "first",
+#                       y_name = "second")
+compare_same_rowcount <- function(x, y, x_name = "x", y_name = "y") {
+  if (nrow(x) == nrow(y)) {
+    return(TRUE)
+  } else {
+    stop(paste(x_name, "and", y_name, "have different number of rows.",
+               x_name, "has", nrow(x), "while", y_name, "has", nrow(y)))
+  }
+}

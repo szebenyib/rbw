@@ -67,7 +67,17 @@ test_that("compare_same_coltypes", {
 })
 
 test_that("compare_same_rowcount", {
-  expect_true(TRUE)
+  x <- mtcars
+  y <- mtcars[1:nrow(mtcars)-1,]
+  expect_error(compare_same_rowcount(x = x, y = y,
+                                     x_name = "STD", y_name = "REDUCED"),
+               paste("STD and REDUCED have different number of rows.",
+                     "STD has 32 while REDUCED has 31"))
+
+  x <- mtcars
+  y <- mtcars
+  expect_true(compare_same_rowcount(x = x, y = y,
+                                    x_name = "STD", y_name = "CLONE"))
 })
 
 test_that("compare_same_structure", {
