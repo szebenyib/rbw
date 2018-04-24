@@ -1,3 +1,5 @@
+library(dplyr)
+
 # Initializes variables that the file loading functions
 # rely on.
 #
@@ -22,20 +24,26 @@ init_file_loading <- function(input_files_dir,
 # collection <- NULL
 # collect_chars_from_string("abc", collection)
 load_csv_local_unconverted <- function(filename) {
-  if (!is.na(RBW_SYSTEM_LANDSCAPE)) {
-    filename <- paste0("_",
-                       filename)
+  if (!exists("RBW_INPUT_FILES_DIR")) {
+    stop("RBW_INPUT_FILES_DIR must be set before using this function, call init_file_loading")
+  }
+  if (exists("RBW_SYSTEM_LANDSCAPE") && !is.na(RBW_SYSTEM_LANDSCAPE)) {
+    filename <- paste0(RBW_SYSTEM_LANDSCAPE,
+                      "_",
+                      filename)
   }
   df <- read.csv(file = file.path(RBW_INPUT_FILES_DIR,
-                                            paste0(RBW_SYSTEM_LANDSCAPE,
-                                                   filename)),
-                 skip = 4,
-                 sep = "|",
-                 dec = ",",
-                 na.strings = "",
-                 stringsAsFactors = FALSE)
+                                  filename),
+                         skip = 3,
+                         sep = "|",
+                         dec = ",",
+                         na.strings = "",
+                         stringsAsFactors = FALSE)
   df <- tbl_df(df)
-  df <- df[3:nrow(df)-1,]
+  # Removing unnecessarily created rows and columns
+  df <- df[3:nrow(df)-1, 3:ncol(df)-1]
+  # Cleaning column names
+  colnames(df) <- strip_x_bic(colnames(df))
   return(df)
 }
 # Collects special characters uniquely from a vector
