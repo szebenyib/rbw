@@ -117,5 +117,24 @@ test_that("compare_same_structure", {
 })
 
 test_that("compare_same_content", {
-  expect_true(TRUE)
+  # One row differs
+  x <- mtcars
+  y <- mtcars
+  y$mpg[5] <- 35
+  expect_error(compare_same_content(x = x, y = y,
+                                      x_name = "STD", y_name = "CHANGED"),
+               paste("The two dataframes have the same structure but",
+                     "they have different content"))
+
+  # Same content in reversed order
+  x <- mtcars
+  y <- mtcars[seq(dim(mtcars)[1], 1), ]
+  expect_true(compare_same_content(x = x, y = y,
+                                   x_name = "STD", y_name = "REVERSED"))
+
+  # Same content
+  x <- mtcars
+  y <- mtcars
+  expect_true(compare_same_content(x = x, y = y,
+                                   x_name = "STD", y_name = "CLONE"))
 })

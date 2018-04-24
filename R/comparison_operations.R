@@ -1,3 +1,5 @@
+library(dplyr)
+
 # Compares whether the two data frames have the same column names and
 # in the same order
 #
@@ -104,4 +106,31 @@ compare_same_structure <- function(x, y, x_name = "x", y_name = "y") {
   compare_same_colnames(x = x, y = y, x_name = x_name, y_name = y_name)
   compare_same_coltypes(x = x, y = y, x_name = x_name, y_name = y_name)
   compare_same_rowcount(x = x, y = y, x_name = x_name, y_name = y_name)
+}
+
+# Compares whether the two data frames are identical regarding structure
+# and content, excluding ordering
+#
+# @param x the first dataframe
+# @param y the second dataframe
+# @param x_name optional name of the first dataframe, used for messages
+# @param y_name optional name of the second dataframe, used for messages
+# @return TRUE if the dataframes are identical
+# @examples
+# compare_same_structure(x = x,
+#                        y = y,
+#                        x_name = "first",
+#                        y_name = "second")
+compare_same_content <- function(x, y, x_name = "x", y_name = "y") {
+  compare_same_structure(x = x, y = y, x_name = x_name, y_name = y_name)
+  cols <- colnames(x)
+  delta_df <- anti_join(x = x,
+                        y = y,
+                        by = cols)
+  if (nrow(delta_df) == 0) {
+    return(TRUE)
+  } else {
+    stop(paste("The two dataframes have the same structure but",
+               "they have different content"))
+  }
 }
