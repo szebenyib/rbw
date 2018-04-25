@@ -250,4 +250,14 @@ test_that("get_delta_rows", {
                                        1:(ncol(manual_delta_df) - 2))]
   rownames(manual_delta_df) <- NULL
   expect_equal(delta_df, manual_delta_df)
+
+  # X Different in two rows, but only one is requested via sample_size
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  y$key <- rownames(y)
+  x[1, 1] <- 123
+  x[nrow(x), ncol(x)] <- "ABC"
+  delta_df <- get_delta_rows(x = x, y = y, sample_size = 1)
+
 })

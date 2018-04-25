@@ -151,7 +151,7 @@ compare_same_content <- function(x, y, x_name = "x", y_name = "y") {
 #        e.g.: RECORDMODE
 # @param sample_size optional if supplied only maximum this amount of rows
 #        will be returned from both dataframes
-#        (returned tbl_df will be two times this). If not supplied then
+#        (returned tbl_df will be max two times this). If not supplied then
 #        all rows will be returned.
 # @param x_name optional name of the first dataframe, used for messages
 # @param y_name optional name of the second dataframe, used for messages
@@ -194,6 +194,9 @@ get_delta_rows <- function(x, y,
     delta_df <- rbind(delta_rows_in_x,
                     delta_rows_in_y)
     delta_df <- delta_df[order(delta_df$id, delta_df$source), ]
+    if (!missing(sample_size)) {
+      delta_df <- delta_df[1:(sample_size * 2), ]
+    }
     # Putting source and id first
     delta_df <- delta_df[c(ncol(delta_df),
                            ncol(delta_df) - 1,
