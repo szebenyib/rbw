@@ -8,6 +8,13 @@ test_that("compare_same_colnames", {
                paste0("STD and LAST_MISSING do not contain the same number",
                       " of columns, STD has 11, while LAST_MISSING has 10"))
 
+  # Without names
+  x <- mtcars
+  y <- mtcars[, 1:ncol(mtcars) - 1]
+  expect_error(compare_same_colnames(x = x, y = y),
+               paste0("x and y do not contain the same number",
+                      " of columns, x has 11, while y has 10"))
+
   # Changing order
   x <- mtcars
   y <- cbind(mtcars[, ncol(mtcars)],
