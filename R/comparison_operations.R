@@ -201,6 +201,6 @@ get_delta_rows <- function(x, y,
                            ncol(delta_df) - 1,
                            1:(ncol(delta_df) - 2))]
   } else {
-    return(data_frame())
+    return(tbl_df(data_frame()))
   }
 }
