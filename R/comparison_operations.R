@@ -178,9 +178,8 @@ get_delta_rows <- function(x, y,
                                y = y,
                                by = compare_cols)
   if (nrow(delta_rows_in_x) > 0) {
-    delta_rows_in_x <- delta_rows_in_x %>%
-      mutate(source = x_name) %>%
-      mutate(id = 1:nrow(delta_rows_in_x ))
+    delta_rows_in_x$source <- x_name
+    delta_rows_in_x$id <- 1:nrow(delta_rows_in_x)
   }
   delta_rows_in_y <- anti_join(x = y,
                                y = x,
