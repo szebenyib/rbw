@@ -108,6 +108,10 @@ test_that("compare_same_structure", {
                                       x_name = "STD", y_name = "REDUCED"),
                paste("STD and REDUCED have different number of rows.",
                      "STD has 32 while REDUCED has 31"))
+  expect_true(compare_same_structure(x = x, y = y,
+                                     x_name = "STD",
+                                     y_name = "REDUCED",
+                                     check_rowcount = FALSE))
 
   # Identical
   x <- mtcars
