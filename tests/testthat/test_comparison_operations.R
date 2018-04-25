@@ -149,3 +149,105 @@ test_that("compare_same_content", {
   expect_true(compare_same_content(x = x, y = y,
                                    x_name = "STD", y_name = "CLONE"))
 })
+
+test_that("get_delta_rows", {
+  # Identical dfs
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  y$key <- rownames(y)
+  delta_df <- get_delta_rows(x = x, y = y)
+  expect_equal(nrow(delta_df), 0)
+  delta_df <- get_delta_rows(x = x, y = y, compare_cols = "key")
+  expect_equal(nrow(delta_df), 0)
+  delta_df <- get_delta_rows(x = x, y = y, compare_cols = "key",
+                             sample_size = 5, x_name = "STD", y_name = "CLONE")
+  expect_equal(nrow(delta_df), 0)
+
+  # Different structure dfs
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  expect_error(get_delta_rows(x = x, y = y),
+               paste("x and y do not contain the same number of columns,",
+                     "x has 12, while y has 11"))
+
+  # X Different in first row
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  y$key <- rownames(y)
+  x[1, 1] <- 123
+  delta_df <- get_delta_rows(x = x, y = y)
+  manual_delta_df <- rbind(x[1, ], y[1, ])
+  manual_delta_df$source <- c("x", "y")
+  manual_delta_df$id <- 1
+  manual_delta_df <- manual_delta_df[c(ncol(manual_delta_df),
+                                       ncol(manual_delta_df) - 1,
+                                       1:(ncol(manual_delta_df) - 2))]
+  rownames(manual_delta_df) <- NULL
+  expect_equal(delta_df, manual_delta_df)
+
+  # X Different in last row
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  y$key <- rownames(y)
+  x[nrow(x), ncol(x)] <- "ABC"
+  delta_df <- get_delta_rows(x = x, y = y)
+  manual_delta_df <- rbind(x[nrow(x), ], y[nrow(y), ])
+  manual_delta_df$source <- c("x", "y")
+  manual_delta_df$id <- 1
+  manual_delta_df <- manual_delta_df[c(ncol(manual_delta_df),
+                                       ncol(manual_delta_df) - 1,
+                                       1:(ncol(manual_delta_df) - 2))]
+  rownames(manual_delta_df) <- NULL
+  expect_equal(delta_df, manual_delta_df)
+
+  # X Different in first and last rows
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  y$key <- rownames(y)
+  x[1, 1] <- 123
+  x[nrow(x), ncol(x)] <- "ABC"
+  delta_df <- get_delta_rows(x = x, y = y)
+  manual_delta_df <- rbind(x[1, ], y[1, ], x[nrow(x), ], y[nrow(y), ])
+  manual_delta_df$source <- c("x", "y")
+  manual_delta_df$id <- c(1, 1, 2, 2)
+  manual_delta_df <- manual_delta_df[c(ncol(manual_delta_df),
+                                       ncol(manual_delta_df) - 1,
+                                       1:(ncol(manual_delta_df) - 2))]
+  rownames(delta_df) <- NULL
+  rownames(manual_delta_df) <- NULL
+  expect_equal(nrow(anti_join(delta_df,
+                              manual_delta_df,
+                              by = "key")),
+               0)
+
+  # X Different in first row, in the column supplied for comparison
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  y$key <- rownames(y)
+  x[1, 1] <- 123
+  delta_df <- get_delta_rows(x = x, y = y, compare_cols = c("cyl", "disp"))
+  expect_equal(nrow(delta_df), 0)
+
+  # X Different in first row, but not in the column supplied for comparison
+  # Also only x will be present since y has a match via the comparison column
+  x <- mtcars
+  y <- mtcars
+  x$key <- rownames(x)
+  y$key <- rownames(y)
+  x[1, 1] <- 123
+  delta_df <- get_delta_rows(x = x, y = y, compare_cols = c("mpg", "disp"))
+  manual_delta_df <- rbind(x[1, ])
+  manual_delta_df$source <- "x"
+  manual_delta_df$id <- 1
+  manual_delta_df <- manual_delta_df[c(ncol(manual_delta_df),
+                                       ncol(manual_delta_df) - 1,
+                                       1:(ncol(manual_delta_df) - 2))]
+  rownames(manual_delta_df) <- NULL
+  expect_equal(delta_df, manual_delta_df)
+})

@@ -139,3 +139,66 @@ compare_same_content <- function(x, y, x_name = "x", y_name = "y") {
                "they have different content"))
   }
 }
+
+# Gets the differing rows of the two data frames in a way that
+# differing rows will be placed next to each other. Sorting
+# and difference making is done key-wise.
+#
+# @param x the first dataframe
+# @param y the second dataframe
+# @param compare_cols optional character vector of "key" columns,
+#        exclue columns from this vector if those do not matter,
+#        e.g.: RECORDMODE
+# @param sample_size optional if supplied only maximum this amount of rows
+#        will be returned from both dataframes
+#        (returned tbl_df will be two times this). If not supplied then
+#        all rows will be returned.
+# @param x_name optional name of the first dataframe, used for messages
+# @param y_name optional name of the second dataframe, used for messages
+# @return tbl_df of differing rows
+# @examples
+# compare_same_structure(x = x,
+#                        y = y,
+#                        key_cols = c("a", "b"),
+#                        sample_size = 5,
+#                        x_name = "first",
+#                        y_name = "second")
+get_delta_rows <- function(x, y,
+                           compare_cols = NULL,
+                           sample_size = NULL,
+                           x_name = "x",
+                           y_name = "y") {
+  compare_same_structure(x, y,
+                         x_name = x_name, y_name = y_name,
+                         check_rowcount = FALSE)
+  if (missing(compare_cols)) {
+    compare_cols = colnames(x)
+  }
+  delta_rows_in_x <- anti_join(x = x,
+                               y = y,
+                               by = compare_cols)
+  if (nrow(delta_rows_in_x) > 0) {
+    delta_rows_in_x <- delta_rows_in_x %>%
+      mutate(source = x_name) %>%
+      mutate(id = 1:nrow(delta_rows_in_x ))
+  }
+  delta_rows_in_y <- anti_join(x = y,
+                               y = x,
+                               by = compare_cols)
+  if (nrow(delta_rows_in_y) > 0) {
+    delta_rows_in_y$source <- y_name
+    delta_rows_in_y$id <- 1:nrow(delta_rows_in_y)
+  }
+  if (nrow(delta_rows_in_x) > 0 ||
+      nrow(delta_rows_in_y) > 0) {
+    delta_df <- rbind(delta_rows_in_x,
+                    delta_rows_in_y)
+    delta_df <- delta_df[order(delta_df$id, delta_df$source), ]
+    # Putting source and id first
+    delta_df <- delta_df[c(ncol(delta_df),
+                           ncol(delta_df) - 1,
+                           1:(ncol(delta_df) - 2))]
+  } else {
+    return(data_frame())
+  }
+}
